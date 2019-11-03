@@ -1,0 +1,41 @@
+version: '3.7'
+
+services:
+   db:
+     image: mysql:5.7
+     restart: always
+     container_name: mysql_wordpress_compose
+     networks:
+      - net-backend
+     volumes:
+       - db_data:/var/lib/mysql
+     environment:
+       MYSQL_ROOT_PASSWORD: root
+       MYSQL_DATABASE: wordpress
+       MYSQL_USER: wordpress
+       MYSQL_PASSWORD: wordpress
+
+   wordpress:
+     depends_on:
+       - db
+     image: wordpress:4.7-php5.6
+     restart: always
+     container_name: wordpress_compose
+     networks:
+      - net-backend
+     ports:
+       - "9080:80"
+     environment:
+       WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_NAME: wordpress
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+
+networks:
+  net-backend:
+   ipam:
+    driver: default
+    config:
+     - subnet: 172.28.0.0/24
+volumes:
+    db_data:
